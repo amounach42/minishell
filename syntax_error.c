@@ -18,7 +18,7 @@ int	pipe_error(t_tokens *token)
 	{
 		if (token->next->type == PIPE)
 		{
-			write(1, "minishell: syntax error near unexpected token `|'\n", 51);
+			write(2, "minishell: syntax error near unexpected token `|'\n", 51);
 			return (1);
 		}
 	}

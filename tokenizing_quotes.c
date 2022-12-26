@@ -71,7 +71,7 @@ t_tokens	*get_word(char *line, int *i)
 
 	if (!line)
 		return (NULL);
-	if (line[*i] == '$')
+	if (line[*i] == '$' && line[*i + 1])
 	{
 		w_token = create_tokens(VARIABLE, "");
 		*i += 1;

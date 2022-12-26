@@ -1,0 +1,43 @@
+                How to use perror in c
+
+In C, the perror function is used to print a description of the error associated with a
+particular value of errno. The perror function takes a single argument, which is a string
+that is printed before the error message.
+
+Here is an example of how the perror function might be used in a C program:
+
+
+
+```
+#include <stdio.h>
+#include <errno.h>
+
+int main()
+{
+    FILE *fp;
+
+    fp = fopen("nonexistent_file.txt", "r");
+    if (fp == NULL) {
+        perror("Error opening file");
+        return 1;
+    }
+
+    return 0;
+}
+```
+
+
+In this example, the fopen function is called to open a file for reading. If the file does not 
+exist, the fopen function returns NULL and sets the value of errno to indicate the error. 
+The perror function is then called with the string "Error opening file" as an argument. This 
+causes the following message to be printed to the console:
+
+
+```
+Error opening file: No such file or directory
+```
+
+The perror function is useful for printing error messages because it automatically includes 
+the description of the error associated with the current value of errno, which can help you 
+understand what went wrong in your program.
+

@@ -1,0 +1,8 @@
+for now i need to try the following :
+    if i have a pipe after the command i should creat a pipe close the reading side of the fd[2]
+        wish is fd[0], and use dup2 to make the fd[1] of the pipe the duplicate of the standard output.
+    if i have a pipe before the command i need to dup the the standard input with the reading side of the pipe and close
+        the writing side of the pipe before hand.
+
+if i manage to do so, what is left is to make this in a way where i call the non builtin function in a way
+i need to see how others handeled the pipe in between command s to speed up the process .

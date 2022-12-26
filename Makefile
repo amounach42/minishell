@@ -3,15 +3,20 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror #-g -fsanitize=address
 
 SRC = minishell.c \
-		tokenizer.c \
-		tokenizing_redirection.c \
-		tokenizing_quotes.c \
-		linkedlist_utils.c \
-		syntax_error.c \
-		pwd.c \
 		env_variables.c\
+		builtins.c \
 		expending.c \
+		linkedlist_utils.c \
+		pwd.c \
 		string_manipulation.c\
+		syntax_error.c \
+		tokenizer_utils.c \
+		tokenizer.c \
+		tokenizing_quotes.c \
+		tokenizing_redirection.c \
+		non_builtins.c \
+		ft_split.c \
+		almost_six.c \
 
 OBJ = $(SRC:%.c=%.o)
 

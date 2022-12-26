@@ -1,0 +1,15 @@
+this is a brief brainstroming on how to creat the builtins :
+
+    * for creating the pwd bultin all we need to do is to call the getcwd() systeme call and it will return the result that we whant.
+    * this result should be freed after use.
+    * for creating echo we will be making a putstr that will always add a new line at the end 
+
+
+things that nedd to change when calling my own cd :
+    * need to change the oldpwd variable in the env.
+    * need the change the current woring directorie.
+
+things that i need to handle when using cd :
+    * ~ .
+    * / .
+    * relative path and absolute paths.

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: iel-bakk < iel-bakk@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 03:13:45 by amounach          #+#    #+#             */
-/*   Updated: 2022/12/13 15:16:35 by amounach         ###   ########.fr       */
+/*   Updated: 2022/12/23 22:23:09 by iel-bakk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ char	*ft_strdup(char *s1)
 	int		i;
 
 	i = 0;
+	if (!s1)
+		return (NULL);
 	str = (char *)malloc(sizeof(char) * ft_strlen(s1) + 1);
 	if (!str)
 		return (NULL);
@@ -55,7 +57,7 @@ t_tokens	*create_tokens(int type, char *value)
 	return (tokens);
 }
 
-int	ft_strlcpy(char *dst,char *src, int dstsize)
+int	ft_strlcpy(char *dst, char *src, int dstsize)
 {
 	int	r;
 	int	i;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: iel-bakk < iel-bakk@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 03:14:04 by amounach          #+#    #+#             */
-/*   Updated: 2022/12/22 21:25:57 by amounach         ###   ########.fr       */
+/*   Updated: 2022/12/26 18:50:28 by iel-bakk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ typedef enum e_tokens
 	HEREDOC,
 	WORD,
 	VARIABLE,
+	FIILE,
+	COMMAND,
 }	e_tokens;
 
 typedef struct s_tokens
@@ -45,10 +47,23 @@ typedef struct s_tokens
 	struct s_tokens *prev;
 }			t_tokens;
 
+typedef struct s_redir{
+	char			*file_name;
+	int				type;
+	struct	s_redir	*next;
+}	t_redir;
+
+typedef struct s_final
+{
+	char			**str;
+	t_redir			*list;
+	struct	s_final	*next;
+}	t_final;
+
 typedef	struct s_env
 {
-	char	*v_name;
-	char	*v_value;	
+	char			*v_name;
+	char			*v_value;
 	struct	s_env	*next;
 }	t_env;
 
@@ -74,7 +89,10 @@ char		*ft_strdup(char *s1);
 int			ft_strlen(char *str);
 int			ft_strlcpy(char *dst, char *src, int dstsize);
 char		*ft_strjoin(char *s1, char *s2);
-int			ft_strcmp(char *s1, char *s2);
+char		**ft_split(char *s, char c);
+char		*malloc_word(char *str, char c);
+char		**ft_free(char **str);
+int			count_words(char *str, char c);
 
 // Syntax Error
 int			pipe_error(t_tokens *token);
@@ -88,17 +106,24 @@ int			error_checker(t_tokens *token);
 
 //parsing functions
 char		*get_v_name(char *str);
-char 	*get_variable(char *line);
 t_env		*creat_env_node(char *v_name);
 t_env		*creat_env_list(char **env);
 void		delete_onev(t_env **head, t_env *to_d);
 void		delete_env_list(t_env **head);
 void		delete_env_node(t_env **to_delete);
 void    	expand_lvars(t_tokens *list);
-int			is_dollar(int c);
-// char		*print_until_ws(char *line);
-// int			get_value(char *line, t_env *var);
-char		*get_v_value(char *env_name, t_env *env);
+void 		change_value(t_tokens *token);
+char 		*get_variable(char *line);
+void 		increment(int *i, int *count);
+void 		get_last_word(char **buffer, char *line, int cpt, int count);
+int 		get_buffer(char *line, char **buffer, int *i, int j, int *cpt, int *count, int len);
+void 		intialize(int *i, int *j, int *len, int *cpt, int *count);
+char 		*get_v_value(char *env_name, t_env *env);
+int 		is_variable(char *line);
+int 		is_character(int c);
+int 		is_dollar(int c);
+
+
 // jesus tests
 t_tokens	*parse_line(char *line);
 t_tokens	*get_special(char *line, int *i);
@@ -113,18 +138,38 @@ char		*inside_double_quote(char *line, int *i);
 char		*inside_single_quote(char *line, int *i);
 t_tokens	*get_single_quote(char *line, int *i);
 
-#endif
+// builtins
+void		mi_env(t_env *list);
+void    	call_builtin(char **arg, t_env *list);
+int 		mi_pwd(void);
+int			mi_echo(char **arg);
+int 		ft_strcmp(char *s1, char *s2);
+int			check_n_option(char *str);
+void		ft_putstr_fd(int fd, char *str);
+int			mi_cd(char **arg);
+void		mi_export(char **arg, t_env *list);
+void		print_export(t_env	*list);
+void		export_cases(char **arg, t_env *list);
+void		modify_envar(char *name, char *op_value, t_env *list);
+void		try_to_creat(char *new, t_env *list);
 
-/**
- * 	looping over the line we get from the readline to create tokens (|, space, quotes, redirections)
- * 	create function to detect each one of those tokens
- * 
- * 	checking syntax error
- * 	if we found PIPE in the beginning of the line or at the end of it.
- * 
- *  > redirection output
- * 	< redirection input
- * 	<< heredoc
- * 	>> append
- * 	
-*/
+// check if builtin or not
+int 		compare_to_biultin(char *str);
+int 		check_builtin(char *str, t_env *list);
+void		non_builtin(char **param, char **env);
+
+// creating a pipe
+int			*creat_pipe(void);
+
+// final linked list
+
+t_final 	*creat_final_node(int tab_len);
+
+// redirection functions
+t_redir 	*creat_redir_node(char *file_name, int type);
+int			verify_is_word_type(t_tokens *test);
+int			calc_cmd_len(t_tokens *list);
+t_final		*lvlup_ultimate(t_tokens *list);
+void		final_commad(t_final **head, t_tokens **list, int len);
+
+#endif
