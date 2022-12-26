@@ -1,0 +1,21 @@
+int this section we will discuss how we are going to parse our command.
+
+a commands arguments are splited by spaces, exemple :
+    ls -la $test"as one" "okeyyy" /// with test=hhhh
+this command will be splited as follow :
+    ls/-la/hhhhas one/okeyyy
+    and the final result should be a double **char, that will contain the following :
+    **tab = ls /
+            -la/
+            hhhhas one/
+            okeyyy/
+            NULL/
+
+to do so, we will need to expand the content of variables.Expendind the content of a variable will be in two cases:
+    * if the variable is declared inside double quotes.
+    * if the variable is declared outside the double quotes.
+
+in the first case we need to convert varibales and double quotes content into strings, then start filling our **char pointer.
+
+
+as a first step to emplement what's above we will try getting variables value from the **env.
