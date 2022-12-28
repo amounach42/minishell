@@ -17,6 +17,7 @@ SRC = minishell.c \
 		non_builtins.c \
 		ft_split.c \
 		almost_six.c \
+		unset.c\
 
 OBJ = $(SRC:%.c=%.o)
 
