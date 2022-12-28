@@ -6,7 +6,7 @@
 /*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 13:45:55 by iel-bakk          #+#    #+#             */
-/*   Updated: 2022/12/26 20:11:02 by amounach         ###   ########.fr       */
+/*   Updated: 2022/12/28 17:19:00 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,20 @@ void intialize(int *i, int *j, int *len, int *cpt, int *count)
 	*count = 0;
 }
 
+int alpha_numeric(int c)
+{
+	return ((c >= 'a' && c <= 'z')
+		|| (c >= 'A' && c <= 'Z') 
+			|| (c >= '0' && c <= '9'));
+}
+
 int get_buffer(char *line, char **buffer, int *i, int j, int *cpt, int *count, int len)
 {
 	char *var;
 	char *value;
 	char *storage;
 
-	while (line[*i] && line[*i] != ' ' && line[*i] != '$')
+	while (line[*i] && alpha_numeric(line[*i]) && line[*i] != '$')
 	{
 		len++;
 		(*i)++;
