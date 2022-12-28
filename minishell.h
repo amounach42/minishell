@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iel-bakk < iel-bakk@student.1337.ma>       +#+  +:+       +#+        */
+/*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 03:14:04 by amounach          #+#    #+#             */
-/*   Updated: 2022/12/26 18:50:28 by iel-bakk         ###   ########.fr       */
+/*   Updated: 2022/12/28 12:02:57 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,9 @@ int 		is_redir(int type);
 // Builtins
 
 int			ft_pwd(void);
+void		unset(t_env **env, char **str);
+void		match_variables(t_env **env, char **str);
+void  call(t_env **env, char **str);
 
 // Linked list utils
 t_tokens	*new_node(int type, char *value);
@@ -83,6 +86,9 @@ void		delete_first_node(t_tokens **head);
 void		push_front(t_tokens **head, t_tokens *node);
 void		push_back(t_tokens **head, t_tokens *node);
 void		display(t_tokens *head);
+// void		delete_node(t_env **head, char *value);
+// void		delete_node(t_env **root, int n);
+int			get_index(t_env **head, char *value);
 
 // Functions from libft and other projects
 char		*ft_strdup(char *s1);
