@@ -3,14 +3,14 @@
 int	main(int ac, char **av, char **env)
 {
 	char	*line;
-	int		i;
+	// int		i;
 	t_env	*env_head;
 	(void)ac;
 	(void)av;
 	t_tokens *tokens;
 	t_final  *t;
 
-	i = 0;
+	// i = 0;
 	// while (env[i])
 	// {
 	// 	printf("%s\n", env[i]);
@@ -38,7 +38,7 @@ int	main(int ac, char **av, char **env)
 	// }
 
 	// while (1);
-	
+
 	// delete_env_list(&t);
 	// delete_onev(&env_head, env_head);
 	// tokens = NULL;
@@ -55,9 +55,10 @@ int	main(int ac, char **av, char **env)
 		expand_lvars(tokens);
 		t = lvlup_ultimate(tmp);
 		call_builtin(t->str, env_head);
+		unset(&env_head, t->str);
 		// while (t->str[i])
 		// {
-		// 	printf("%s\n", t->str[i]);
+		// 	printf("\n\nstr:%s\n", t->str[i]);
 		// 	i++;
 		// }
 		// while (tokens)
@@ -68,6 +69,6 @@ int	main(int ac, char **av, char **env)
 		// 	tokens = tokens->next;
 		// }
 		add_history(line);
-		i = 0;
+		// i = 0;
 	}
 }
