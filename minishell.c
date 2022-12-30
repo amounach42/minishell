@@ -1,5 +1,16 @@
 #include "minishell.h"
 
+
+void	handler_c(int sig)
+{
+	(void) sig;
+
+	rl_replace_line("", 0);
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_redisplay();
+}
+
 int	main(int ac, char **av, char **env)
 {
 	char	*line;
@@ -16,7 +27,19 @@ int	main(int ac, char **av, char **env)
 	// 	printf("%s\n", env[i]);
 	// 	i++;
 	// }
+	
 	env_head = creat_env_list(env);
+	// t_env *tmps;
+	// tmps = env_head;
+	// while (tmps)
+	// {
+	// 	printf("%s\n", tmps->v_name);
+	// 	printf("%s\n", tmps->v_value);
+	// 	tmps = tmps->next;
+	// }
+	
+
+	
 	if (!env_head)
 		return (0);
 	// i = check_builtin(av[1], env_head);
@@ -43,12 +66,13 @@ int	main(int ac, char **av, char **env)
 	// delete_onev(&env_head, env_head);
 	// tokens = NULL;
 	t_tokens *tmp;
+	rl_catch_signals = 0;
+	signal(SIGINT, handler_c);
 	while (1)
 	{
 		line = readline("Minishell$ ");
 		if (!line)
-			return 0;
-		// printf("%s\n", line);
+			exit (0);
 		tokens = parse_line(line);
 		tmp = tokens->next;
 		error_checker(tokens);
@@ -56,6 +80,7 @@ int	main(int ac, char **av, char **env)
 		t = lvlup_ultimate(tmp);
 		call_builtin(t->str, env_head);
 		unset(&env_head, t->str);
+		// printf ("%s\n",get_home(env_head));
 		// while (t->str[i])
 		// {
 		// 	printf("\n\nstr:%s\n", t->str[i]);
