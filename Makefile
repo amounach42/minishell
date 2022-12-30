@@ -1,6 +1,11 @@
 NAME = Minishell
 CC = cc
 CFLAGS = -Wall -Wextra -Werror #-g -fsanitize=address
+READLINE = $(shell brew --prefix readline)
+
+INCLUDE_READLINE = $(addprefix $(READLINE),/include)
+
+LIB_READLINE = $(addprefix $(READLINE),/lib)
 
 SRC = minishell.c \
 		env_variables.c\
@@ -18,15 +23,16 @@ SRC = minishell.c \
 		ft_split.c \
 		almost_six.c \
 		unset.c\
+		cd.c\
 
 OBJ = $(SRC:%.c=%.o)
 
 all :$(NAME)
 $(NAME) :$(OBJ) minishell.h
-			$(CC) $(CFLAGS) $(OBJ) -o $@ -lreadline
+			$(CC) $(CFLAGS) -I $(INCLUDE_READLINE) -L $(LIB_READLINE) -lreadline $(OBJ) -o $@ 
 
 %.o : %.c minishell.h
-		$(CC) $(CFLAGS) -c $< -o $@
+		$(CC) $(CFLAGS) -I $(INCLUDE_READLINE) -c $< -o $@
 
 clean:
 	@echo "\033[0;31mCleaning minishell..."
