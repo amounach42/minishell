@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expending.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iel-bakk < iel-bakk@student.1337.ma>       +#+  +:+       +#+        */
+/*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 13:45:55 by iel-bakk          #+#    #+#             */
-/*   Updated: 2023/01/01 14:58:46 by iel-bakk         ###   ########.fr       */
+/*   Updated: 2023/01/03 19:32:29 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,110 +47,88 @@ char *get_env_value(char *env_name, t_env *env)
 	return (NULL);
 }
 
-void intialize(int *i, int *j, int *len, int *cpt, int *count)
+void intialize(t_params *params)
 {
-	*cpt = 0;
-	*i = 0;
-	*j = 0;
-	*len = 0;
-	*count = 0;
+	params->cpt = 0;
+	params->i = 0;
+	params->j = 0;
+	params->len = 0;
+	params->count = 0;
 }
-// int alpha_numeric(int c)
-// {
-// 	return ((c >= 'a' && c <= 'z')
-// 		|| (c >= 'A' && c <= 'Z') 
-// 			|| (c >= '0' && c <= '9'));
-// }
 
-int get_buffer(char *line, char **buffer, int *i, int j, int *cpt, int *count, int len, t_env *env)
+int get_buffer(t_params *params, t_env *env)
 {
 	char *var;
 	char *value;
 	char *storage;
 
-	while (line[*i] && m_alnum(line[*i]) && line[*i] != '$')
+	while (params->line[params->i] && m_alnum(params->line[params->i]) && params->line[params->i] != '$')
 	{
-		len++;
-		(*i)++;
+		params->len++;
+		(params->i)++;
 	}
-	var = (char *)malloc((sizeof(char) * (len + 1)));
-	ft_strlcpy(var, line + j, len + 1);
+	var = (char *)malloc((sizeof(char) * (params->len + 1)));
+	ft_strlcpy(var, params->line + params->j, params->len + 1);
 	value = get_env_value(var, env);//change this part
 	if (value == NULL)
 		value = "";
-	storage = (char *)malloc((sizeof(char) * ((*count) + 1)));
-	ft_strlcpy(storage, line + (*cpt), (*count) + 1);
-	*buffer = ft_strjoin(*buffer, storage); // leaks
-	*buffer = ft_strjoin(*buffer, value);
-	*cpt = *i;
-	*count = 0;
-	return (len);
+	storage = (char *)malloc((sizeof(char) * ((params->count) + 1)));
+	ft_strlcpy(storage, params->line + (params->cpt), (params->count) + 1);
+	params->buffer = ft_strjoin(params->buffer, storage); // leaks
+	params->buffer = ft_strjoin(params->buffer, value);
+	params->cpt = params->i;
+	params->count = 0;
+	return (params->len);
 }
 
-void get_last_word(char **buffer, char *line, int cpt, int count)
+void get_last_word(t_params *params)
 {
 	char *storage;
 
-	if (count > 0)
+	if (params->count > 0)
 	{
-		storage = (char *)malloc((sizeof(char) * (count + 1)));
+		storage = (char *)malloc((sizeof(char) * (params->count + 1)));
 		if (!storage)
 			return;
-		ft_strlcpy(storage, line + cpt, count + 1);
-		*buffer = ft_strjoin(*buffer, storage);
+		ft_strlcpy(storage, params->line + params->cpt, params->count + 1);
+		params->buffer = ft_strjoin(params->buffer, storage);
 	}
 }
 
-void increment(int *i, int *count)
+void increment(t_params *params)
 {
-	(*i)++;
-	(*count)++;
+	(params->i)++;
+	(params->count)++;
 }
 
 char *get_variable(char *line, t_env *env)
 {
-	int i;
-	int len;
-	int cpt;
-	int count;
-	char *buffer = "";
-	int j;
+	t_params param;
 
-	intialize(&i, &j, &len, &cpt, &count);
-	while (line[i])
+
+	param.line = line;
+	param.buffer = ft_strdup("");
+	intialize(&param);
+	while (param.line[param.i])
 	{
-		if (is_dollar(line[i]))
+		if (is_dollar(param.line[param.i]))
 		{
-			i++;
-			j = i;
-			len = 0;
-			get_buffer(line, &buffer, &i, j, &cpt, &count, len, env);
+			param.i++;
+			param.j = param.i;
+			param.len = 0;
+			get_buffer(&param, env);
 		}
 		else
-			increment(&i, &count);
+			increment(&param);
 	}
-	get_last_word(&buffer, line, cpt, count);
-	return (buffer);
+	get_last_word(&param);
+	return (param.buffer);
 }
 
 void change_value(t_tokens *token, t_env *env)
 {
 	token->value = get_variable(token->value, env);
 }
-
-// char	*getmi_env(char *str)
-// {
-// 	int	i;
-
-// 	i = 0;
-// 	if (!str)
-// 		return (NULL);
-// 	while (str[i])
-// 	{
-// 		if (str[i])
-// 	}
-// }
-
 
 int	m_alnum(char c)
 {
