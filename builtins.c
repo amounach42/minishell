@@ -77,14 +77,14 @@ int mi_echo(char **arg)
 	return (0);
 }
 
-int mi_pwd(void)
-{
-	char *buff;
+#include <limits.h>
 
-	buff = NULL;
-	buff = getcwd(buff, 0);
+int	mi_pwd(void)
+{
+	char	buff[PATH_MAX];
+	
+	getcwd(buff, PATH_MAX);
 	printf("%s\n", buff);
-	free(buff);
 	return (0);
 }
 
