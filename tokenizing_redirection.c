@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tokenizer_utils.c                                  :+:      :+:    :+:   */
+/*   tokenizing_redirection.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 16:29:40 by amounach          #+#    #+#             */
-/*   Updated: 2022/11/06 17:01:43 by amounach         ###   ########.fr       */
+/*   Updated: 2022/12/31 16:47:19 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,12 @@ t_tokens	*get_left_out(char *line, int *i)
 		return (NULL);
 	if (line[*i + 1] == '<')
 	{
-		tmp = create_tokens(APPEND, "<<");
+		tmp = create_tokens(HEREDOC, "<<");
 		*i += 2;
 	}
 	else
 	{
-		tmp = create_tokens(RE_OUTPUT, "<");
+		tmp = create_tokens(RE_INPUT, "<");
 		*i += 1;
 	}
 	if (!tmp)

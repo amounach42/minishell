@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_variables.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iel-bakk < iel-bakk@student.1337.ma>       +#+  +:+       +#+        */
+/*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 14:33:30 by iel-bakk          #+#    #+#             */
-/*   Updated: 2022/11/14 13:40:30 by iel-bakk         ###   ########.fr       */
+/*   Updated: 2022/12/30 21:48:51 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,22 @@ char    *get_v_name(char *str)
 t_env	*creat_env_node(char *v_name)
 {
 	t_env	*tmp;
-
+	char	cwd[1024];
+	getcwd(cwd, 1024);
 	tmp = (t_env *)malloc(sizeof(t_env));
 	if (!tmp)
 		return (NULL);
 	tmp->next = NULL;
-	tmp->v_name = v_name;
-	tmp->v_value = getenv(v_name);
+	if (ft_strlen(v_name) == 0)
+	{
+		tmp->v_name = "PWD";
+		tmp->v_value = ft_strdup(cwd);
+	}
+	else
+	{
+		tmp->v_name = v_name;
+		tmp->v_value = getenv(v_name);
+	}
 	return (tmp);
 }
 // creat a fucntion that loops over the **env and creats the t_env nodes and fills theme up.
@@ -54,8 +63,11 @@ t_env	*creat_env_list(char **env)
 	t_env	*tmp;
 
 	i = 0;
-	if (!env)
-		return (NULL);
+	if (!*env)
+	{
+		head = creat_env_node("");
+		return (head);
+	}
 	head = creat_env_node(get_v_name(env[i]));
 	if (!head)
 		return (NULL);

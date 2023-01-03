@@ -1,6 +1,7 @@
 NAME = Minishell
 CC = cc
-CFLAGS = -Wall -Wextra -Werror #-g -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
+
 READLINE = $(shell brew --prefix readline)
 
 INCLUDE_READLINE = $(addprefix $(READLINE),/include)
@@ -12,7 +13,6 @@ SRC = minishell.c \
 		builtins.c \
 		expending.c \
 		linkedlist_utils.c \
-		pwd.c \
 		string_manipulation.c\
 		syntax_error.c \
 		tokenizer_utils.c \
@@ -22,8 +22,12 @@ SRC = minishell.c \
 		non_builtins.c \
 		ft_split.c \
 		almost_six.c \
-		unset.c\
-		cd.c\
+		procced_to_execution.c \
+		redirections.c \
+		unset.c \
+		cd.c \
+		heredoc.c \
+		signals.c \
 
 OBJ = $(SRC:%.c=%.o)
 

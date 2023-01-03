@@ -6,7 +6,7 @@
 /*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 17:16:21 by amounach          #+#    #+#             */
-/*   Updated: 2022/11/09 17:03:07 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/02 22:11:18 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	pipe_error(t_tokens *token)
 	{
 		if (token->next->type == PIPE)
 		{
-			write(2, "minishell: syntax error near unexpected token `|'\n", 51);
+			ft_putstr_fd(2, "minishell: syntax error near unexpected `|'\n");
 			return (1);
 		}
 	}
@@ -26,9 +26,14 @@ int	pipe_error(t_tokens *token)
 	{
 		if (token->next->type == PIPE)
 		{
-			write(2, "minishell: syntax error near unexpected token `||'\n", 52);
+			ft_putstr_fd(2, "minishell: syntax error near unexpected `||'\n");
 			return (1);
 		}
+	}
+	else if (token->type == PIPE && token->next == NULL)
+	{
+		ft_putstr_fd(2, "minishell: syntax error near unexpected `|'\n");
+		return (1);
 	}
 	return (0);
 }
@@ -46,8 +51,7 @@ int	redirection_error(t_tokens *token)
 	if ((redi_type(token->type) && (token->next == NULL))
 		|| (is_redir(token->type) && redi_type(token->next->type)))
 	{
-		write(2,
-			"minishell: syntax error near unexpected token `newline'\n", 57);
+		ft_putstr_fd(2, "minishell: syntax error near unexpected token `newline'\n");
 		return (1);
 	}
 	else if ((token->type == RE_INPUT || token->type == APPEND
@@ -69,7 +73,7 @@ int	quotes_error(t_tokens *token)
 	if ((token->type == SINGLE_Q && token->valid == -1)
 		|| (token->type == DOUBLE_Q && token->valid == -1))
 	{
-		write(2, "minishell: syntax error: unexpected end of file\n", 49);
+		ft_putstr_fd(2, "minishell: syntax error: unexpected end of file\n");
 		return (1);
 	}
 	return (0);
@@ -89,18 +93,28 @@ int is_redir(int type)
 
 int	error_checker(t_tokens *token)
 {
-	int	result;
-
+	if (!token)
+		return (0);
 	while (token)
 	{
 		if (token->type == NONE || token->type == PIPE)
-			result = pipe_error(token);
+		{
+			if (pipe_error(token))
+				return (1);
+			
+		}
 		else if (token->type == RE_INPUT || token->type == RE_OUTPUT
-			|| token->type == APPEND)
-			result = redirection_error(token);
+			|| token->type == APPEND || token->type == HEREDOC)
+		{
+			if (redirection_error(token))
+				return (1);
+		}
 		else if (token->type == SINGLE_Q || token->type == DOUBLE_Q)
-			result = quotes_error(token);
+		{
+			if(quotes_error(token))
+				return (1);
+		}
 		token = token->next;
 	}
-	return (result);
+	return (0);
 }

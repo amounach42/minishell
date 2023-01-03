@@ -1,99 +1,68 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/01/01 12:52:57 by iel-bakk          #+#    #+#             */
+/*   Updated: 2023/01/02 21:16:32 by amounach         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-
-
-void	handler_c(int sig)
-{
-	(void) sig;
-
-	rl_replace_line("", 0);
-	write(1, "\n", 1);
-	rl_on_new_line();
-	rl_redisplay();
-}
 
 int	main(int ac, char **av, char **env)
 {
-	char	*line;
-	// int		i;
-	t_env	*env_head;
+	char		*line;
+	t_env		*env_head;
+	t_tokens	*tokens;
+	t_final		*t;
+	int			sig;
+
 	(void)ac;
 	(void)av;
-	t_tokens *tokens;
-	t_final  *t;
-
-	// i = 0;
-	// while (env[i])
-	// {
-	// 	printf("%s\n", env[i]);
-	// 	i++;
-	// }
-	
-	env_head = creat_env_list(env);
-	// t_env *tmps;
-	// tmps = env_head;
-	// while (tmps)
-	// {
-	// 	printf("%s\n", tmps->v_name);
-	// 	printf("%s\n", tmps->v_value);
-	// 	tmps = tmps->next;
-	// }
-	
-
-	
-	if (!env_head)
-		return (0);
-	// i = check_builtin(av[1], env_head);
-	// if (i == 1)
-	// 	non_builtin(av + 1, env);
-	// else if (i == 2)
-	// 	// path already exists
-	// else if (i == 3)
-	// 	// creat a path for the command
-	// else
-	// 	perror("error");
-	// while (env_head)
-	// {
-	// 	printf("%s",env_head->v_name);
-	// 	if (env_head->v_value)
-	// 		printf("=%s",env_head->v_value);
-	// 	printf("\n");
-	// 	env_head = env_head->next;
-	// }
-
-	// while (1);
-
-	// delete_env_list(&t);
-	// delete_onev(&env_head, env_head);
-	// tokens = NULL;
-	t_tokens *tmp;
+	sig = 0;
 	rl_catch_signals = 0;
+	env_head = creat_env_list(env);
+	handler_c(sig);
 	signal(SIGINT, handler_c);
 	while (1)
 	{
 		line = readline("Minishell$ ");
 		if (!line)
-			exit (0);
-		tokens = parse_line(line);
-		tmp = tokens->next;
-		error_checker(tokens);
-		expand_lvars(tokens);
-		t = lvlup_ultimate(tmp);
-		call_builtin(t->str, env_head);
-		unset(&env_head, t->str);
-		// printf ("%s\n",get_home(env_head));
-		// while (t->str[i])
-		// {
-		// 	printf("\n\nstr:%s\n", t->str[i]);
-		// 	i++;
-		// }
-		// while (tokens)
-		// {
-		// 	printf(" ------- %s\n", tokens->value);
-		// 	printf(" ------- %d\n", tokens->type);
-		// 	printf(" ------- %d\n", tokens->space);
-		// 	tokens = tokens->next;
-		// }
-		add_history(line);
-		// i = 0;
+			break ;
+		if (*line)
+		{
+			tokens = parse_line(line);
+			if (error_checker(tokens))
+			{
+				continue;
+			}
+			open_heredoc(tokens->next);
+			expand_lvars(tokens, env_head);
+			// while (tokens)
+			// {
+			// 	printf("value = %s |", tokens->value);
+			// 	printf("type = %d\n", tokens->type);
+			// 	tokens = tokens->next;
+			// }
+			t = convert_from_tokens_to_final(tokens);
+			// for (t_final *l = t; l != NULL; l = l->next) {
+			// 	for (int i = 0; t->str[i]; i++)
+			// 		printf("%s ", t->str[i]);
+			// 	t_redir *red = t->list;
+			// 	while (red) {
+			// 		printf("(%d) %s ", red->type, red->file_name);
+			// 		red = red->next;
+			// 	}
+			// 	if (l->next)
+			// 		printf(" | ");
+			// }
+			// printf("\n");
+			exec_command(t, env_head);
+			add_history(line);
+		}
 	}
+	return (0);
 }
