@@ -52,21 +52,6 @@ void echo_print(int fd, char *str)
 	}
 }
 
-int mi_cd(char **arg)
-{
-	if (arg[2])
-	{
-		// if (arg[3] != NULL)
-		// 	write(2, "Invalid argumets !!", 20);
-		if (arg[2][0] == '/')
-		{
-			chdir(arg[2]);
-			mi_pwd();
-		}
-	}
-	return (0);
-}
-
 int mi_echo(char **arg)
 {
 	int i;
@@ -103,36 +88,71 @@ int mi_pwd(void)
 	return (0);
 }
 
-void call_builtin(char **arg, t_env *list)
+int call_builtin(t_final	*cmd, t_env *list, int pip, int fd[2])
 {
 	int i;
+	int id;
 
 	i = 0;
-	if (arg[i])
+	id = 0;
+	if (!pip)
+		go_builtins(cmd, list);
+	else
 	{
-		if (ft_strcmp(arg[0], "pwd") == 0)
+		id = fork();
+		if (id == 0)
 		{
-			if (arg[1] == NULL)
-				mi_pwd();
-			else
-				write(2, "pwd: too many arguments\n", 25);
+			if (pip)
+			{
+				if (fd[0] != 0)
+				{
+					dup2(fd[0], 0);
+					close(fd[0]);
+				}
+				if (fd[1] != 1)
+				{
+					dup2(fd[1], 1);
+					close(fd[1]);
+				}
+			}
+			launch_redir(cmd->list);
+			if (cmd->str[i])
+				go_builtins(cmd, list);
+			exit(0);
 		}
-		else if (ft_strcmp(arg[0], "echo") == 0)
-			mi_echo(arg);
-		else if (ft_strcmp(arg[0], "env") == 0)
-		{
-			if (arg[1] == NULL)
-				mi_env(list);
-			else
-				write(2, "invalid arguments !!\n", 22);
-		}
-		else if (ft_strcmp(arg[0], "export") == 0)
-		{
-			mi_export(arg, list);
-		}
-		// else if (ft_strcmp(arg[1], "cd"))
-		// 	mi_cd(arg);
+		waitpid(id, NULL, 0);
 	}
+	return (id);
+}
+
+
+void	go_builtins(t_final *cmd, t_env *list)
+{
+	launch_redir(cmd->list);
+	if (ft_strcmp(cmd->str[0], "pwd") == 0)
+	{
+		if (cmd->str[1] == NULL)
+			mi_pwd();
+		else
+			write(2, "pwd: too many arguments\n", 25);
+	}
+	else if (ft_strcmp(cmd->str[0], "echo") == 0)
+		mi_echo(cmd->str);
+	else if (ft_strcmp(cmd->str[0], "env") == 0)
+	{
+		if (cmd->str[1] == NULL)
+			mi_env(list);
+		else
+			write(2, "invalid arguments !!\n", 22);
+	}
+	else if (ft_strcmp(cmd->str[0], "unset") == 0)
+		unset(&list, cmd->str);
+	else if (ft_strcmp(cmd->str[0], "export") == 0)
+		mi_export(cmd->str, list);
+	else if (ft_strcmp(cmd->str[0], "exit") == 0)
+		exit(0);
+	else if (ft_strcmp(cmd->str[0], "cd") == 0)
+		ft_cd(cmd->str, list);
 }
 
 void print_export(t_env *list)
@@ -142,10 +162,41 @@ void print_export(t_env *list)
 		printf("declare -x ");
 		printf("%s", list->v_name);
 		if (list->v_value)
-			printf("=%s", list->v_value);
+			printf("=\"%s\"", list->v_value);
 		printf("\n");
 		list = list->next;
 	}
+}
+
+int only_char(char c)
+{
+	if (c >= 'a' && c <= 'z')
+		return (1);
+	else if (c >= 'A' && c <= 'Z')
+		return (1);
+	else if (c == '_')
+		return (1);
+	return (0);
+}
+
+int valid_v_name(char *str)
+{
+	int i;
+
+	i = 0;
+	if (!str[i])
+		return (0);
+	while (str[i])
+	{
+		if (str[i] == '+' && i > 0 && str[i + 1] == '=' && str[i + 2])
+			return (1);
+		else if (str[i] == '=' && i > 0)
+			return (1);
+		else if (!only_char(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
 void export_cases(char **arg, t_env *list)
@@ -160,6 +211,11 @@ void export_cases(char **arg, t_env *list)
 		j = 0;
 		while (arg[i][j])
 		{
+			if (!valid_v_name(arg[i]))
+			{
+				perror("Invalid identifier");
+				break;
+			}
 			if (arg[i][j] == '=' || arg[i][j] == '+')
 			{
 				if (arg[i][j] == '+' && arg[i][j + 1] != '=')
@@ -242,7 +298,6 @@ void modify_envar(char *name, char *op_value, t_env *list)
 
 void mi_export(char **arg, t_env *list)
 {
-	(void)arg;
 	if (arg[1])
 		export_cases(arg, list);
 	else

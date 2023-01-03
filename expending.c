@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expending.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: iel-bakk < iel-bakk@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 13:45:55 by iel-bakk          #+#    #+#             */
-/*   Updated: 2022/12/28 17:19:00 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/01 14:58:46 by iel-bakk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,13 @@ int is_variable(char *line)
 	return (0);
 }
 
-char *get_v_value(char *env_name, t_env *env)
+char *get_env_value(char *env_name, t_env *env)
 {
 	while (env)
 	{
 		if (!ft_strcmp(env_name, env->v_name))
 			return (env->v_value);
-		else if (ft_strcmp(env_name, env->v_value))
-			env = env->next;
-		else
-			return (0);
+		env = env->next;
 	}
 	return (NULL);
 }
@@ -58,28 +55,27 @@ void intialize(int *i, int *j, int *len, int *cpt, int *count)
 	*len = 0;
 	*count = 0;
 }
+// int alpha_numeric(int c)
+// {
+// 	return ((c >= 'a' && c <= 'z')
+// 		|| (c >= 'A' && c <= 'Z') 
+// 			|| (c >= '0' && c <= '9'));
+// }
 
-int alpha_numeric(int c)
-{
-	return ((c >= 'a' && c <= 'z')
-		|| (c >= 'A' && c <= 'Z') 
-			|| (c >= '0' && c <= '9'));
-}
-
-int get_buffer(char *line, char **buffer, int *i, int j, int *cpt, int *count, int len)
+int get_buffer(char *line, char **buffer, int *i, int j, int *cpt, int *count, int len, t_env *env)
 {
 	char *var;
 	char *value;
 	char *storage;
 
-	while (line[*i] && alpha_numeric(line[*i]) && line[*i] != '$')
+	while (line[*i] && m_alnum(line[*i]) && line[*i] != '$')
 	{
 		len++;
 		(*i)++;
 	}
 	var = (char *)malloc((sizeof(char) * (len + 1)));
 	ft_strlcpy(var, line + j, len + 1);
-	value = getenv(var);
+	value = get_env_value(var, env);//change this part
 	if (value == NULL)
 		value = "";
 	storage = (char *)malloc((sizeof(char) * ((*count) + 1)));
@@ -111,7 +107,7 @@ void increment(int *i, int *count)
 	(*count)++;
 }
 
-char *get_variable(char *line)
+char *get_variable(char *line, t_env *env)
 {
 	int i;
 	int len;
@@ -128,7 +124,7 @@ char *get_variable(char *line)
 			i++;
 			j = i;
 			len = 0;
-			get_buffer(line, &buffer, &i, j, &cpt, &count, len);
+			get_buffer(line, &buffer, &i, j, &cpt, &count, len, env);
 		}
 		else
 			increment(&i, &count);
@@ -137,12 +133,66 @@ char *get_variable(char *line)
 	return (buffer);
 }
 
-void change_value(t_tokens *token)
+void change_value(t_tokens *token, t_env *env)
 {
-	token->value = get_variable(token->value);
+	token->value = get_variable(token->value, env);
 }
 
-void expand_lvars(t_tokens *list)
+// char	*getmi_env(char *str)
+// {
+// 	int	i;
+
+// 	i = 0;
+// 	if (!str)
+// 		return (NULL);
+// 	while (str[i])
+// 	{
+// 		if (str[i])
+// 	}
+// }
+
+
+int	m_alnum(char c)
+{
+	if (c >= 'a' && c <= 'z')
+		return (1);
+	else if (c >= 'A' && c <= 'Z')
+		return (1);
+	else if (c >= '0' && c <= '9')
+		return (1);
+	return (0);
+}
+
+char	*get_variable_new_value(char *str, t_env *env)
+{
+	int		i;
+	char	*tmp;
+
+	i = 0;
+	tmp = NULL;
+	while (str[i])
+	{
+		if (!m_alnum(str[i]))
+			break ;
+		i++;
+	}
+	if (i)
+	{
+		tmp = (char *)malloc(sizeof(char) * i + 1);
+		if (!tmp)
+			return (NULL);
+		if (str[i] && !m_alnum(str[i]))
+		{
+			ft_strlcpy(tmp, str, i + 1);
+			return (ft_strjoin(get_env_value(tmp, env), str + i));
+		}
+		else
+			return (ft_strdup(get_env_value(str, env)));
+	}
+	return (tmp);
+}
+
+void expand_lvars(t_tokens *list, t_env *env)
 {
 	char *new_value;
 
@@ -150,7 +200,7 @@ void expand_lvars(t_tokens *list)
 	{
 		if (list->type == VARIABLE)
 		{
-			new_value = getenv(list->value);
+			new_value = get_variable_new_value(list->value, env);
 			if (list->value)
 				free(list->value);
 			if (new_value)
@@ -160,9 +210,8 @@ void expand_lvars(t_tokens *list)
 		}
 		else if (list->type == DOUBLE_Q)
 		{
-			get_variable(list->value);
-			change_value(list);
-			printf("\nNew value:%s\n", list->value);
+			get_variable(list->value, env);
+			change_value(list, env);
 		}
 		list = list->next;
 	}
