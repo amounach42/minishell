@@ -6,7 +6,7 @@
 /*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 03:14:04 by amounach          #+#    #+#             */
-/*   Updated: 2023/01/03 19:28:04 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/03 21:33:41 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,17 @@ typedef enum e_tokens
 	VARIABLE,
 }					e_tokens;
 
+typedef struct s_params
+{
+	char			*line;
+	char			*buffer;
+	int				i;
+	int				j;
+	int				cpt;
+	int				count;
+	int				len;
+}					t_params;
+
 typedef struct s_tokens
 {
 	int				type;
@@ -70,16 +81,7 @@ typedef struct s_env
 	char			*v_value;
 	struct s_env	*next;
 }					t_env;
-typedef struct s_params
-{
-	char			*line;
-	char			*buffer;
-	int				i;
-	int				j;
-	int				cpt;
-	int				count;
-	int				len;
-}					t_params;
+
 // Tokenizer
 t_tokens			*create_tokens(int type, char *value);
 int					is_space(t_tokens **token, char *line);
