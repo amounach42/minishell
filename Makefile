@@ -26,8 +26,9 @@ SRC = minishell.c \
 		redirections.c \
 		unset.c \
 		cd.c \
-		heredoc.c \
 		signals.c \
+		heredoc.c \
+		
 
 OBJ = $(SRC:%.c=%.o)
 
