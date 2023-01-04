@@ -6,55 +6,11 @@
 /*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/31 00:37:32 by amounach          #+#    #+#             */
-/*   Updated: 2023/01/04 00:09:06 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/04 15:37:07 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static int	count_size(int nb)
-{
-	int	i;
-
-	i = 0;
-	if (nb <= 0)
-	{
-		nb *= -1;
-		i++;
-	}
-	while (nb != 0)
-	{
-		i++;
-		nb /= 10;
-	}
-	return (i);
-}
-
-char	*ft_itoa(int n)
-{
-	char	*str;
-	size_t	len;
-	long	nb;
-
-	nb = n;
-	len = count_size(n);
-	str = (char *)malloc(sizeof(char) * (len + 1));
-	if (!str)
-		return (NULL);
-	if (nb < 0)
-		nb *= -1;
-	str[len] = '\0';
-	while (len--)
-	{
-		str[len] = (nb % 10) + 48;
-		nb /= 10;
-	}
-	if (n < 0)
-		str[0] = '-';
-	else if (n == 0)
-		str[0] = '0';
-	return (str);
-}
 
 int	file_is_exists(const char *file_name)
 {
@@ -84,6 +40,8 @@ void	check_eof(char **value, int type)
 	while (1)
 	{
 		line = readline(">");
+		if (!global)
+			return ;
 		if (!line || !ft_strcmp(*value, line))
 			break ;
 		else
@@ -100,7 +58,7 @@ void	open_heredoc(t_tokens *token)
 	t_tokens	*tmp;
 
 	tmp = token;
-	while (tmp)
+	while (tmp && global)
 	{
 		if (tmp->type == HEREDOC)
 		{
