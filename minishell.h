@@ -6,7 +6,7 @@
 /*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 03:14:04 by amounach          #+#    #+#             */
-/*   Updated: 2023/01/03 21:33:41 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/04 19:47:13 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@
 # include <sys/stat.h>
 # include <dirent.h>
 # include <unistd.h>
+
+int global;
+
 
 typedef enum e_tokens
 {
@@ -82,16 +85,38 @@ typedef struct s_env
 	struct s_env	*next;
 }					t_env;
 
+typedef struct node_g
+{
+	void                *pointer;
+	struct node_g        *next;
+}                        t_node_g;
+
+typedef struct garbage_collect
+{
+	t_node_g            *head;
+}                        t_garbage;
+
+typedef struct s_globals
+{
+	t_garbage	*garbage;
+	int			status_sign;
+}	t_globals;
+
+extern t_globals	g_tools;
 // Tokenizer
 t_tokens			*create_tokens(int type, char *value);
 int					is_space(t_tokens **token, char *line);
 int					is_pipe(t_tokens **tokens, char *line);
 int					redi_type(int type);
 int					is_redir(int type);
-int					m_alnum(char c);
+int					is_alpha_num(char c);
 
 // Builtins
 int					ft_pwd(void);
+
+// Exit status
+char				*check_status(char *str);
+void	expand_status(t_params *param, char *status);
 
 // Linked list utils
 t_tokens			*new_node(int type, char *value);
@@ -103,6 +128,7 @@ void				display(t_tokens *head);
 // Functions from libft and other projects
 char				*ft_strdup(char *s1);
 int					ft_strlen(char *str);
+char				*ft_itoa(int n);
 int					ft_strlcpy(char *dst, char *src, int dstsize);
 char				*ft_strjoin(char *s1, char *s2);
 char				**ft_split(char *s, char c);
@@ -129,10 +155,10 @@ t_env				*creat_env_list(char **env);
 void				delete_onev(t_env **head, t_env *to_d);
 void				delete_env_list(t_env **head);
 void				delete_env_node(t_env **to_delete);
-void				expand_lvars(t_tokens *list, t_env *head);
+void				expande_variables(t_tokens *list, t_env *head);
 void				change_value(t_tokens *token, t_env *env);
 char				*get_variable(char *line, t_env *env);
-void				increment(t_params *params);
+int					increment(t_params *params);
 void				get_last_word(t_params *params);
 int					get_buffer(t_params *params, t_env *env);
 
@@ -207,7 +233,7 @@ void				add_redir_end(t_redir **head, t_redir *new);
 // execution test after parsing is done
 char				*get_cmd_path(char *str, t_env *env);
 char				*test_paths(char **paths, char *cmd);
-void				launch_redir(t_redir *list);
+int					launch_redir(t_redir *list);
 void				exec_command(t_final *t, t_env *env);
 char				**convert_from_env_to_tb(t_env *env);
 int					execute(int fd[2], t_env *env, t_final *t);
@@ -225,5 +251,9 @@ int					count_arg(char **str);
 void				free_redir_node(t_redir *f);
 void				add_redir_to_list(t_tokens **token, t_final *cmd);
 t_redir				*current_redir(t_tokens **token);
+
+// garbage collector
+void				*add_garbage(t_garbage *g, void *pointer);
+void				free_garbage(t_garbage *g);
 
 #endif
