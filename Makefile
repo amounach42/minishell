@@ -11,11 +11,16 @@ LIB_READLINE = $(addprefix $(READLINE),/lib)
 SRC = minishell.c \
 		env_variables.c\
 		builtins.c \
-		expending.c \
+		expanding.c \
+		variable_expansion.c \
+		expande_status.c\
+		ft_is.c\
 		linkedlist_utils.c \
 		string_manipulation.c\
 		syntax_error.c \
+		syntax_error_utils.c\
 		tokenizer_utils.c \
+		libft_functions.c\
 		tokenizer.c \
 		tokenizing_quotes.c \
 		tokenizing_redirection.c \
@@ -28,7 +33,7 @@ SRC = minishell.c \
 		cd.c \
 		signals.c \
 		heredoc.c \
-		
+		garbage_collector.c \
 
 OBJ = $(SRC:%.c=%.o)
 
