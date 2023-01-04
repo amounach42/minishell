@@ -1,11 +1,11 @@
 #include "minishell.h"
 
-char *ft_strjoin(char *s1, char *s2)
+char	*ft_strjoin(char *s1, char *s2)
 {
-	int len;
-	int l;
-	int i;
-	char *str;
+	int		len;
+	int		l;
+	int		i;
+	char	*str;
 
 	if (!s1)
 		s1 = ft_strdup("");

@@ -6,7 +6,7 @@
 /*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/31 16:49:54 by amounach          #+#    #+#             */
-/*   Updated: 2022/12/31 16:49:55 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/03 14:52:49 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ t_tokens	*get_special(char *line, int *i)
 	tmp = NULL;
 	if (line[*i] == '|')
 		tmp = get_pipe(i);
-	else if (line [*i] == '>')
+	else if (line[*i] == '>')
 		tmp = get_right_out(line, i);
 	else if (line[*i] == '<')
 		tmp = get_left_out(line, i);

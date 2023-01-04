@@ -1,41 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   unset.c                                            :+:      :+:    :+:   */
+/*   syntax_error_utils.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/12/26 20:11:44 by amounach          #+#    #+#             */
-/*   Updated: 2023/01/04 15:00:51 by amounach         ###   ########.fr       */
+/*   Created: 2023/01/04 15:12:54 by amounach          #+#    #+#             */
+/*   Updated: 2023/01/04 15:12:57 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	match_variables(t_env **env, char **str)
+int	empty_quote(t_tokens *token)
 {
-	int		i;
-	t_env	*tmp;
-
-	tmp = *env;
-	i = 1;
-	while (str[i])
-	{
-		tmp = *env;
-		while (tmp)
-		{
-			if (ft_strcmp(str[i], tmp->v_name) == 0)
-			{
-				printf("string: %s\n", str[i]);
-				delete_onev(env, tmp);
-			}
-			tmp = tmp->next;
-		}
-		i++;
-	}
+	if ((token->type == SINGLE_Q && token->value[0] == '\0')
+		|| (token->type == DOUBLE_Q && token->value[0] == '\0'))
+		return (1);
+	return (0);
 }
 
-void	unset(t_env **env, char **str)
+int	redi_type(int type)
 {
-	match_variables(env, str);
+	return (type == PIPE || type == RE_INPUT || type == RE_OUTPUT
+		|| type == HEREDOC || type == APPEND);
+}
+
+int	is_redir(int type)
+{
+	return (type == RE_INPUT || type == RE_OUTPUT || type == HEREDOC
+		|| type == APPEND);
 }
