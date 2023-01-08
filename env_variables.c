@@ -6,17 +6,17 @@
 /*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 14:33:30 by iel-bakk          #+#    #+#             */
-/*   Updated: 2022/12/30 21:48:51 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/08 05:27:58 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char    *get_v_name(char *str)
+char	*get_v_name(char *str)
 {
-	int     i;
-	int     len;
-	char    *tmp;
+	int		i;
+	int		len;
+	char	*tmp;
 
 	len = 0;
 	i = 0;
@@ -25,7 +25,7 @@ char    *get_v_name(char *str)
 	tmp = (char *)malloc(sizeof(char) * len + 1);
 	if (!tmp)
 		return (0);
-	if (!ft_strlcpy(tmp , str, len + 1))
+	if (!ft_strlcpy(tmp, str, len + 1))
 		return (ft_strdup(""));
 	return (tmp);
 }
@@ -34,6 +34,7 @@ t_env	*creat_env_node(char *v_name)
 {
 	t_env	*tmp;
 	char	cwd[1024];
+
 	getcwd(cwd, 1024);
 	tmp = (t_env *)malloc(sizeof(t_env));
 	if (!tmp)
@@ -51,10 +52,6 @@ t_env	*creat_env_node(char *v_name)
 	}
 	return (tmp);
 }
-// creat a fucntion that loops over the **env and creats the t_env nodes and fills theme up.
-// don't forget to protect what get_v_name returns to avoid problemes and find a way to store the size of the list
-// maybe on another struct wich will diffenetly be the struct we will be using during the execution
-// it's not a necessity but just think about it you never know ou might needed it.
 
 t_env	*creat_env_list(char **env)
 {
@@ -94,7 +91,7 @@ void	delete_env_node(t_env **to_delete)
 	}
 	if (tmp->v_value)
 		tmp->v_value = NULL;
-	tmp->next =NULL;
+	tmp->next = NULL;
 	free(tmp);
 	*to_delete = NULL;
 }
@@ -112,33 +109,7 @@ void	delete_env_list(t_env **head)
 			free(tmp->v_name);
 		tmp->v_value = NULL;
 		free(tmp);
-		// delete_env_node(&tmp);
 		tmp = next;
 	}
 	*head = NULL;
-}
-
-void	delete_onev(t_env **head, t_env *to_d)
-{
-	t_env	*tmp;
-
-	tmp = *head;
-	if (!to_d)
-		return ;
-	if (tmp == to_d)
-	{
-		*head = tmp->next;
-		delete_env_node(&tmp);
-		return ;
-	}
-	while (tmp->next)
-	{
-		if (tmp->next == to_d)
-		{
-			tmp->next = tmp->next->next;
-			delete_env_node(&to_d);
-			return ;
-		}
-		tmp = tmp->next;
-	}
 }

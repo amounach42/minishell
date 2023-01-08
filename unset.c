@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: iel-bakk < iel-bakk@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/26 20:11:44 by amounach          #+#    #+#             */
-/*   Updated: 2023/01/04 15:00:51 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/06 15:51:35 by iel-bakk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,7 @@ void	match_variables(t_env **env, char **str)
 		while (tmp)
 		{
 			if (ft_strcmp(str[i], tmp->v_name) == 0)
-			{
-				printf("string: %s\n", str[i]);
 				delete_onev(env, tmp);
-			}
 			tmp = tmp->next;
 		}
 		i++;

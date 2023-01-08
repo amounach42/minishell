@@ -6,7 +6,7 @@
 /*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/21 16:38:18 by iel-bakk          #+#    #+#             */
-/*   Updated: 2023/01/04 15:43:45 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/08 08:42:19 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	check_builtin(char **s, t_env *env)
 
 	str = *s;
 	if (!str)
-		return (-1);
+		return (2);
 	if (str[0] == '/')
 	{
 		if (access((const char *)str, F_OK) != 0)
@@ -44,9 +44,7 @@ int	check_builtin(char **s, t_env *env)
 		{
 			tmp = get_cmd_path(str, env);
 			if (tmp)
-			{
 				s[0] = tmp;
-			}
 			return (2);
 		}
 	}
@@ -65,29 +63,38 @@ int	*creat_pipe(void)
 	return (fd);
 }
 
-int	exec_cmd(t_final *t, char **env, int fd[2])
+void	my_dup_two(int fd[2], int last)
 {
-	int pid;
+	if (fd[1] != -1)
+	{
+		dup2(fd[1], 1);
+		close(fd[1]);
+		close(last);
+	}
+	if (fd[0] != -1)
+	{
+		dup2(fd[0], 0);
+		close(fd[0]);
+	}
+}
+
+int	exec_cmd(t_final *t, char **env, int fd[2], int last)
+{
+	int	pid;
 
 	pid = fork();
+	if (pid < 0)
+		return (perror("fork error"), exit(0), 0);
 	if (pid == 0)
 	{
 		signal(SIGQUIT, SIG_DFL);
 		signal(SIGINT, SIG_DFL);
-		if (fd[1] != -1)
-		{
-			dup2(fd[1], 1);
-			close(fd[1]);
-		}
-		if (fd[0] != -1)
-		{
-			dup2(fd[0], 0);
-			close(fd[0]);
-		}
+		my_dup_two(fd, last);
 		if (launch_redir(t->list))
 			exit(0);
 		execve(t->str[0], t->str, env);
-		write(2, "command not found\n", 18);
+		if (t->str[0])
+			write(2, "command not found\n", 18);
 		exit(127);
 	}
 	ft_free(env);

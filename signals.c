@@ -6,7 +6,7 @@
 /*   By: iel-bakk < iel-bakk@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/29 11:24:08 by amounach          #+#    #+#             */
-/*   Updated: 2023/01/04 14:19:25 by iel-bakk         ###   ########.fr       */
+/*   Updated: 2023/01/05 14:16:47 by iel-bakk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 void	handler_c(int sig)
 {
-	if (global)
+	if (g_tools.global)
 	{
-		global = 0;
+		g_tools.global = 0;
 		rl_done = 1;
 	}
 	else

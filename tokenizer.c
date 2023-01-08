@@ -6,7 +6,7 @@
 /*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 03:13:45 by amounach          #+#    #+#             */
-/*   Updated: 2023/01/04 15:02:48 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/08 04:28:57 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,19 @@ t_tokens	*create_tokens(int type, char *value)
 int	is_special(char c)
 {
 	char	*special;
+	int		i;
 
 	if (!c)
 		return (0);
-	special = " |><'\"";
-	while (*special)
+	special = ft_strdup(" |><'\"");
+	i = 0;
+	while (special[i])
 	{
-		if (*special == c)
-			return (1);
-		special++;
+		if (special[i] == c)
+			return (free(special), 1);
+		i++;
 	}
+	free(special);
 	return (0);
 }
 

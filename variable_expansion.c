@@ -6,7 +6,7 @@
 /*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/04 16:18:49 by amounach          #+#    #+#             */
-/*   Updated: 2023/01/04 19:46:56 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/08 05:04:25 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,11 @@ int	get_buffer(t_params *params, t_env *env)
 		value = "";
 	storage = (char *)malloc((sizeof(char) * ((params->count) + 1)));
 	ft_strlcpy(storage, params->line + (params->cpt), (params->count) + 1);
-	params->buffer = ft_strjoin(params->buffer, storage);
-	params->buffer = ft_strjoin(params->buffer, value);
+	params->buffer = join_and_free(params->buffer, storage);
+	params->buffer = join_and_free(params->buffer, value);
 	params->cpt = params->i;
 	params->count = 0;
-	return (params->len);
+	return (free(storage), free(var), params->len);
 }
 
 void	get_last_word(t_params *params)
@@ -57,7 +57,8 @@ void	get_last_word(t_params *params)
 		if (!storage)
 			return ;
 		ft_strlcpy(storage, params->line + params->cpt, params->count + 1);
-		params->buffer = ft_strjoin(params->buffer, storage);
+		params->buffer = join_and_free(params->buffer, storage);
+		free(storage);
 	}
 }
 

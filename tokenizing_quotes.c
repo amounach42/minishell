@@ -6,7 +6,7 @@
 /*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/31 16:49:54 by amounach          #+#    #+#             */
-/*   Updated: 2023/01/03 14:52:49 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/08 04:29:42 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,8 @@ char	*allocat_word(char *line, int *i)
 	char	*word;
 
 	len = 0;
-	while (!is_special(line[*i + len]) && line[*i + len])
+	while (line[*i + len] && !is_special(line[*i + len]) && line[*i
+			+ len] != '$')
 		len++;
 	word = (char *)malloc(sizeof(char) * len + 1);
 	if (!word)
@@ -88,6 +89,8 @@ t_tokens	*get_word(char *line, int *i)
 		w_token = create_tokens(VARIABLE, "");
 		*i += 1;
 	}
+	else if (line[*i] == '$')
+		return ((*i)++, create_tokens(WORD, "$"));
 	else
 		w_token = create_tokens(WORD, "");
 	free(w_token->value);
