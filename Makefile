@@ -1,6 +1,6 @@
 NAME = Minishell
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
+CFLAGS = -Wall -Wextra -Werror #-fsanitize=address
 
 READLINE = $(shell brew --prefix readline)
 
@@ -13,7 +13,6 @@ SRC = minishell.c \
 		builtins.c \
 		expanding.c \
 		variable_expansion.c \
-		expande_status.c\
 		ft_is.c\
 		linkedlist_utils.c \
 		string_manipulation.c\
@@ -33,7 +32,12 @@ SRC = minishell.c \
 		cd.c \
 		signals.c \
 		heredoc.c \
-		garbage_collector.c \
+		expande_status.c \
+		procced_to_execution_utils.c\
+		builtins_.c\
+		builtins__.c\
+		builtins_utils.c\
+		envirement_variables.c
 
 OBJ = $(SRC:%.c=%.o)
 
