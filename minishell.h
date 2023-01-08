@@ -6,13 +6,12 @@
 /*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 03:14:04 by amounach          #+#    #+#             */
-/*   Updated: 2023/01/04 19:47:13 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/08 09:00:53 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
-
 # include <stdlib.h>
 # include <string.h>
 # include <stdio.h>
@@ -24,9 +23,19 @@
 # include <sys/stat.h>
 # include <dirent.h>
 # include <unistd.h>
-
-int global;
-
+# include <dirent.h>
+# include <errno.h>
+# include <fcntl.h>
+# include <limits.h>
+# include <readline/history.h>
+# include <readline/readline.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <sys/stat.h>
+# include <sys/types.h>
+# include <termios.h>
+# include <unistd.h>
 
 typedef enum e_tokens
 {
@@ -42,6 +51,8 @@ typedef enum e_tokens
 	WORD,
 	VARIABLE,
 }					e_tokens;
+
+
 
 typedef struct s_params
 {
@@ -87,20 +98,44 @@ typedef struct s_env
 
 typedef struct node_g
 {
-	void                *pointer;
-	struct node_g        *next;
-}                        t_node_g;
+	void			*pointer;
+	struct node_g	*next;
+}					t_node_g;
 
 typedef struct garbage_collect
 {
-	t_node_g            *head;
-}                        t_garbage;
+	t_node_g		*head;
+}					t_garbage;
 
 typedef struct s_globals
 {
-	t_garbage	*garbage;
-	int			status_sign;
-}	t_globals;
+	t_garbage		*garbage;
+	int				global;
+	int				status_sign;
+}					t_globals;
+
+typedef	struct s_built
+{
+	t_final	*cmd;
+	t_env	**list;
+}	t_built;
+
+typedef struct s_eof
+{
+	char	*line;
+	char	*buff;
+	int		idx;
+	char	*tmp;
+	char	*tmp2;
+}	t_eof;
+
+typedef struct s_main
+{
+	char		*line;
+	t_env		*env_head;
+	t_tokens	*tokens;
+	int			sig;
+}	t_main;
 
 extern t_globals	g_tools;
 // Tokenizer
@@ -116,8 +151,7 @@ int					ft_pwd(void);
 
 // Exit status
 char				*check_status(char *str);
-void	expand_status(t_params *param, char *status);
-
+void				expand_status(t_params *param, char *status);
 // Linked list utils
 t_tokens			*new_node(int type, char *value);
 void				delete_first_node(t_tokens **head);
@@ -136,6 +170,7 @@ char				*malloc_word(char *str, char c);
 char				**ft_free(char **str);
 int					count_words(char *str, char c);
 char				*get_variable_new_value(char *str, t_env *env);
+int					ft_atoi(char *str);
 
 // Syntax Error
 int					pipe_error(t_tokens *token);
@@ -168,6 +203,7 @@ int					is_variable(char *line);
 int					is_character(int c);
 int					is_dollar(int c);
 int					only_char(char c);
+t_env				*mitirix_to_env(char *name, char *op_value, t_env *last, char *buff);
 
 // jesus tests
 t_tokens			*parse_line(char *line);
@@ -182,21 +218,28 @@ t_tokens			*get_double_quote(char *line, int *i);
 char				*inside_double_quote(char *line, int *i);
 char				*inside_single_quote(char *line, int *i);
 t_tokens			*get_single_quote(char *line, int *i);
+char				*join_and_free(char *s1, char *s2);
+char				*get_env_value_(char *env_name, t_env *env);
 
 // builtins
 void				mi_env(t_env *list);
-int					call_builtin(t_final *cmd, t_env *list, int pip, int fd[2]);
-int					mi_pwd(void);
+int					call_builtin(t_built built, int pip, int fd[2],
+						int last);
+int					mi_pwd(char **str);
+void				push_back_env(t_env **head, t_env *node);
+void				echo_print(int fd, char *str);
 int					mi_echo(char **arg);
 int					ft_strcmp(char *s1, char *s2);
 int					check_n_option(char *str);
 void				ft_putstr_fd(int fd, char *str);
-void				mi_export(char **arg, t_env *list);
+void				mi_export(char **arg, t_env **list);
 void				print_export(t_env *list);
 int					valid_v_name(char *str);
-void				export_cases(char **arg, t_env *list);
-void				modify_envar(char *name, char *op_value, t_env *list);
-void				try_to_creat(char *new, t_env *list);
+void				export_cases(char **arg, t_env **list);
+void				modify_envar(char *name, char *op_value, t_env **list);
+void				try_to_creat(char *new, t_env **list);
+void				ft_exit(char **str);
+int					check_if_num(char *str);
 
 // check if builtin or not
 int					compare_to_biultin(char *str);
@@ -224,7 +267,7 @@ void				continue_param_fill(t_final *command, t_tokens **buff,
 void				copy_table(char **old, char **new, int old_len);
 
 // non builtins tests
-int					exec_cmd(t_final *cmd, char **env, int fd[2]);
+int					exec_cmd(t_final *cmd, char **env, int fd[2], int last);
 
 void				lvlup_redir(t_tokens **list, t_final **head);
 t_redir				*get_redir_list(t_tokens **list);
@@ -234,10 +277,10 @@ void				add_redir_end(t_redir **head, t_redir *new);
 char				*get_cmd_path(char *str, t_env *env);
 char				*test_paths(char **paths, char *cmd);
 int					launch_redir(t_redir *list);
-void				exec_command(t_final *t, t_env *env);
+void				exec_command(t_final *t, t_env **env);
 char				**convert_from_env_to_tb(t_env *env);
-int					execute(int fd[2], t_env *env, t_final *t);
-void				go_builtins(t_final *cmd, t_env *list);
+int					execute(int fd[2], t_env **env, t_final *t, int last);
+void				go_builtins(t_final *cmd, t_env **list);
 
 // amounach
 void				handler_c(int sig);
