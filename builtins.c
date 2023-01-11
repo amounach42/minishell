@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: iel-bakk < iel-bakk@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/07 21:47:39 by amounach          #+#    #+#             */
-/*   Updated: 2023/01/08 05:31:12 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/11 17:47:28 by iel-bakk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ void	echo_print(int fd, char *str)
 
 void	print_export(t_env *list)
 {
+	if (!list)
+		return ;
 	while (list)
 	{
 		printf("declare -x ");

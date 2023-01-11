@@ -6,7 +6,7 @@
 /*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/29 12:24:45 by amounach          #+#    #+#             */
-/*   Updated: 2023/01/08 09:52:39 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/08 10:49:18 by amounach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,15 @@ void	change_dir(char *old_pwd, t_env *list)
 	while (tmp)
 	{
 		if (!ft_strcmp(tmp->v_name, "PWD"))
+		{
+			free(tmp->v_value);
 			tmp->v_value = ft_strdup(cwd);
+		}
 		if (!ft_strcmp(tmp->v_name, "OLDPWD"))
-			tmp->v_value = old_pwd;
+		{
+			free(tmp->v_value);
+			tmp->v_value = ft_strdup(old_pwd);
+		}
 		tmp = tmp->next;
 	}
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_variables.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: iel-bakk < iel-bakk@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 14:33:30 by iel-bakk          #+#    #+#             */
-/*   Updated: 2023/01/08 05:27:58 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/11 13:29:41 by iel-bakk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,13 @@ t_env	*creat_env_node(char *v_name)
 	tmp->next = NULL;
 	if (ft_strlen(v_name) == 0)
 	{
-		tmp->v_name = "PWD";
+		tmp->v_name = ft_strdup("PWD");
 		tmp->v_value = ft_strdup(cwd);
 	}
 	else
 	{
 		tmp->v_name = v_name;
-		tmp->v_value = getenv(v_name);
+		tmp->v_value = ft_strdup(getenv(v_name));
 	}
 	return (tmp);
 }
@@ -84,13 +84,16 @@ void	delete_env_node(t_env **to_delete)
 	t_env	*tmp;
 
 	tmp = *to_delete;
-	if (tmp->v_name)
+	if (tmp && tmp->v_name)
 	{
 		free(tmp->v_name);
 		tmp->v_name = NULL;
 	}
-	if (tmp->v_value)
+	if (tmp && tmp->v_value)
+	{
+		free(tmp->v_value);
 		tmp->v_value = NULL;
+	}
 	tmp->next = NULL;
 	free(tmp);
 	*to_delete = NULL;

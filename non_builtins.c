@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   non_builtins.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: iel-bakk < iel-bakk@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/21 16:38:18 by iel-bakk          #+#    #+#             */
-/*   Updated: 2023/01/08 08:42:19 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/11 17:17:16 by iel-bakk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@ int	check_builtin(char **s, t_env *env)
 	char	*str;
 	char	*tmp;
 
-	str = *s;
-	if (!str)
+	if (!*s)
 		return (2);
+	str = *s;
 	if (str[0] == '/')
 	{
 		if (access((const char *)str, F_OK) != 0)

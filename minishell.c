@@ -3,63 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: iel-bakk < iel-bakk@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 12:52:57 by iel-bakk          #+#    #+#             */
-/*   Updated: 2023/01/08 09:20:15 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/11 16:05:19 by iel-bakk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
 t_globals	g_tools = {0};
 
 int	event(void)
 {
 	return (0);
-}
-
-void	free_tokens(t_tokens *tok)
-{
-	t_tokens	*tmp;
-
-	tmp = tok;
-	while (tok)
-	{
-		tok = tok->next;
-		free(tmp->value);
-		free(tmp);
-		tmp = tok;
-	}
-}
-
-void	free_redir(t_redir *tok)
-{
-	t_redir	*tmp;
-
-	tmp = tok;
-	while (tok)
-	{
-		tok = tok->next;
-		free(tmp->file_name);
-		free(tmp);
-		tmp = tok;
-	}
-}
-
-void	free_final(t_final *tok)
-{
-	t_final	*tmp;
-
-	tmp = tok;
-	while (tok)
-	{
-		tok = tok->next;
-		ft_free(tmp->str);
-		if (tmp->list)
-			free_redir(tmp->list);
-		free(tmp);
-		tmp = tok;
-	}
 }
 
 void	main_helper(t_env **head, t_tokens *tokens, char *line)
@@ -112,7 +69,6 @@ void	loop_and_execute(t_main *all)
 		}
 		else
 			free(all->line);
-		system("leaks Minishell");
 	}
 }
 

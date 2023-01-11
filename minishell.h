@@ -3,20 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amounach <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: iel-bakk < iel-bakk@student.1337.ma>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/05 03:14:04 by amounach          #+#    #+#             */
-/*   Updated: 2023/01/08 09:00:53 by amounach         ###   ########.fr       */
+/*   Updated: 2023/01/11 17:44:45 by iel-bakk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
+# include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
-# include <stdio.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 # include <termios.h>
 # include <fcntl.h>
 # include <sys/types.h>
@@ -27,15 +27,11 @@
 # include <errno.h>
 # include <fcntl.h>
 # include <limits.h>
-# include <readline/history.h>
-# include <readline/readline.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
 # include <sys/stat.h>
 # include <sys/types.h>
+# include <sys/wait.h>
+# include <signal.h>
 # include <termios.h>
-# include <unistd.h>
 
 typedef enum e_tokens
 {
@@ -50,9 +46,7 @@ typedef enum e_tokens
 	HEREDOC,
 	WORD,
 	VARIABLE,
-}					e_tokens;
-
-
+}	t_etokens;
 
 typedef struct s_params
 {
@@ -114,11 +108,11 @@ typedef struct s_globals
 	int				status_sign;
 }					t_globals;
 
-typedef	struct s_built
+typedef struct s_built
 {
 	t_final	*cmd;
 	t_env	**list;
-}	t_built;
+}					t_built;
 
 typedef struct s_eof
 {
@@ -145,6 +139,11 @@ int					is_pipe(t_tokens **tokens, char *line);
 int					redi_type(int type);
 int					is_redir(int type);
 int					is_alpha_num(char c);
+
+// main stuff
+void				free_tokens(t_tokens *tok);
+void				free_redir(t_redir *tok);
+void				free_final(t_final *tok);
 
 // Builtins
 int					ft_pwd(void);
@@ -203,7 +202,8 @@ int					is_variable(char *line);
 int					is_character(int c);
 int					is_dollar(int c);
 int					only_char(char c);
-t_env				*mitirix_to_env(char *name, char *op_value, t_env *last, char *buff);
+t_env				*mitirix_to_env(char *name, char *op_value,
+						t_env *last, char *buff);
 
 // jesus tests
 t_tokens			*parse_line(char *line);
@@ -290,6 +290,7 @@ void				open_heredoc(t_tokens *token);
 void				ft_cd(char **arg, t_env *list);
 void				change_dir(char *old_pwd, t_env *list);
 int					count_arg(char **str);
+char				*change_file_name(char *file_name, int *idx);
 
 void				free_redir_node(t_redir *f);
 void				add_redir_to_list(t_tokens **token, t_final *cmd);

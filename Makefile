@@ -1,6 +1,6 @@
 NAME = Minishell
 CC = cc
-CFLAGS = -Wall -Wextra -Werror #-fsanitize=address
+CFLAGS = -Wall -Wextra -Werror
 
 READLINE = $(shell brew --prefix readline)
 
@@ -37,7 +37,12 @@ SRC = minishell.c \
 		builtins_.c\
 		builtins__.c\
 		builtins_utils.c\
-		envirement_variables.c
+		envirement_variables.c \
+		expanding_utils.c \
+		minishell_main_tools.c \
+		creat_and_verify.c \
+		linked_list_tools.c \
+		herdoc_tools.c \
 
 OBJ = $(SRC:%.c=%.o)
 
